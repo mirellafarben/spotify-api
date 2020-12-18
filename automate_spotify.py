@@ -7,17 +7,19 @@ import json
 import requests
 import getSongs
 from datetime import date
-from secrets import spotify_token, spotify_user_id
+from secrets import spotify_user_id
+from refresh import Refresh
+
 
 
 class CreatePlaylist:
     def __init__(self):
-        self.spotify_token = spotify_token
+        self.spotify_token = "spotify_token"
         self.spotify_user_id = spotify_user_id
         self.song_uris = ""
 
     def create_playlist(self):
-        print("don't mind me i'm just doin' stuff 👀")
+        print("Creating the playlist...")
         today = date.today()
 
         todayFormatted = today.strftime("%d/%m/%Y")
@@ -26,8 +28,9 @@ class CreatePlaylist:
             spotify_user_id)
 
         request_body = json.dumps({
-            "name": todayFormatted + " automated playlist",
-            "description": "Yes. I think I finaly did it.",
+            "name": "Python's Automated playlist " + todayFormatted,
+            "description": "this automated playlists search songs from a .txt document on spotify, then procceeds to add"
+                           " the first result to the playlist.",
             "public": True
         })
 
@@ -61,6 +64,7 @@ class CreatePlaylist:
         print(self.song_uris)
 
     def add_song_to_playlist(self):
+        print("adding songs to the playlist...")
         self.new_playlist_id = self.create_playlist()
 
         a.finds_songs()
@@ -73,6 +77,14 @@ class CreatePlaylist:
 
         print(response.json)
 
+    def call_refresh(self):
+        print("refreshing token...")
+        refresh_caller = Refresh()
+
+        self.spotify_token = refresh_caller.refresh()
+
+        self.add_song_to_playlist()
+
 
 a = CreatePlaylist()
-a.add_song_to_playlist()
+a.call_refresh()
